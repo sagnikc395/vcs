@@ -53,7 +53,18 @@ def main(argv=sys.argv[1:]):
             cmd_ls_files(args)
         case "ls-tree":
             cmd_ls_tree(args)
-             
+        case "rev-parse":
+            cmd_rev_parse(args)
+        case "rm":
+            cmd_rm(args)
+        case "show-ref":
+            cmd_show_ref(args)
+        case "status":
+            cmd_status(args)
+        case "tag":
+            cmd_tag(args)
+        case _:
+            print("cmd not supported! ")             
 
     
 
