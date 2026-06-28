@@ -38,3 +38,10 @@ etc. either things that is perfectly compatible with git itself.
     - return and optionally create a path to a file 
 - `repo_dir`:
     - return and optionally create a path to a dir. File versions only creates the directories upto the last component.
+
+- to create a new repo, we start with a directory, that directory is called .git and contains:
+    - .git/objects/ -> the object store
+    - .git/refs/ -> reference store
+    - .git/HEAD -> a reference to the current HEAD 
+    - .git/config > repo's config file
+    

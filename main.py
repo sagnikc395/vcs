@@ -1,13 +1,15 @@
+#type: ignore 
+
 import sys 
 import argparse
 
 
-def main(argv=sys.argv[1:]): # type: ignore
+def main(argv=sys.argv[1:]): 
     argparser = argparse.ArgumentParser(description="a mini git like vcs")
     argsubparsers = argparser.add_subparsers(title="Commands", dest="command")
     argsubparsers.required = True 
     
-    args = argparser.parse_args(argv) # type: ignore
+    args = argparser.parse_args(argv) 
     match args.command:
         case "add": cmd_add(args)
         case "cat-file": cmd_cat_file(args)
