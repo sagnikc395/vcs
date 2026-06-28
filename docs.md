@@ -49,3 +49,28 @@ etc. either things that is perfectly compatible with git itself.
     - repositoryformatversion = 0 -> the version of the gitdir format. 0 means the initial format, 1 the same with extensions. if > 1, we ignore, we accept only 0
     - filemode=false, disables tracking of the file modes (permissions) changes in the work tree 
     - base=false; indicates that this repo has a worktree.Git supports an optional worktree key which indicates the location of the worktree.
+
+## objects:
+- git at its core is a content-addressed filesystem.
+- unlike regular filesystems, where the name of a file is arbitary and unrelated to that file's contents, the names of files are stored by Git are mathematically derived from their contents.
+- if a single byte of text file changes,its internal name will change too. 
+- we dont simply modify a file in git, we create a new file in a different location.
+- objects are files in git repo, whose paths are determined by their contents.
+- git uses objects to store quite a lot of things : 
+    - the actual files it keeps in version conttrol - source code for example
+    - commit are objects too, as well as tags.
+    - almost everything in git, is stored as an object.
+
+-  An object starts with a header that specifies its type: blob, commit, tag or tree (more on that in a second). This header is followed by an ASCII space (0x20), then the size of the object in bytes as an ASCII number, then null (0x00) (the null byte), then the contents of the object.
+- objects (headers and contents) are stored compressed with zlib. 
+
+- the path where git stores a given object is computed by calculating the SHA-1 hash of its content, renders the hash as a lowercase hexadecimal string, and splits it in 2 parts:
+    - first two characters and the rest 
+    - first part as a directory name and the rest as the file name down to a crawl.
+    - this creates 256 possible intermediate directories, hence dividing the average number of files per directory by 256.
+
+### Generic Object Object
+- objects can be of multiple types, but they all share the same storage/retrieval mechanism and the same general header format.
+- before we dive into the details of various types of objects, we need to abstract over these common features.
+- easiest way is to create a generic `GitObject` with 2 methods : serialize() and deserialize() and a default init() to create a new emtpy object if needed.
+- the `__init__` either loads the object from the provided data or calls the subclasses provided `init()` to create a new.empty object.
