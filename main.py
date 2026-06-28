@@ -1,21 +1,48 @@
 import click
 import sys
+from rich.console import Console
+from rich.markup import escape
+from rich.text import Text
 
 from vcs.vcs_commit import log_graphviz
+from vcs.vcs_console import ColorMode, console_for
 from vcs.vcs_repo import repo_create, repo_find
 from vcs.vcs_obj import object_find, object_hash, object_read
 
 
 @click.group()
-def cli() -> None:
+@click.option(
+    "--color",
+    "color_mode",
+    type=click.Choice(["auto", "always", "never"]),
+    default="auto",
+    envvar="VCS_COLOR",
+    show_default=True,
+    help="Control colored output.",
+)
+@click.pass_context
+def cli(ctx: click.Context, color_mode: ColorMode) -> None:
     """vcs: a mini git-like content tracker."""
+    ctx.obj = {"color_mode": color_mode}
+
+
+def get_console(ctx: click.Context) -> Console:
+    color_mode: ColorMode = "auto"
+    if isinstance(ctx.obj, dict):
+        color_mode = ctx.obj.get("color_mode", "auto")
+    return console_for(color_mode)
 
 
 @cli.command("init")
 @click.argument("path", default=".", metavar="directory")
-def cmd_init(path: str) -> None:
+@click.pass_context
+def cmd_init(ctx: click.Context, path: str) -> None:
     """Initialize a new, empty repository."""
-    repo_create(path)
+    repo = repo_create(path)
+    console = get_console(ctx)
+    message = Text("Initialized empty vcs repository in ")
+    message.append(repo.gitdir, style="bold green")
+    console.print(message)
 
 
 @cli.command("cat-file")
@@ -46,7 +73,10 @@ def cmd_cat_file(object_type: str, object_name: str) -> None:
     "-w", "--write", is_flag=True, help="Actually write the object into the database."
 )
 @click.argument("path", type=click.Path(exists=True))
-def cmd_hash_object(object_type: str, write: bool, path: str) -> None:
+@click.pass_context
+def cmd_hash_object(
+    ctx: click.Context, object_type: str, write: bool, path: str
+) -> None:
     """Compute object ID and optionally creates a blob from a file."""
     if write:
         repo = repo_find()
@@ -55,7 +85,7 @@ def cmd_hash_object(object_type: str, write: bool, path: str) -> None:
 
     with open(path, "rb") as fd:
         sha = object_hash(fd, object_type.encode(), repo)
-        click.echo(sha)
+        get_console(ctx).print(escape(sha), style="bold yellow")
 
 
 @cli.command("log", help="Display history of a given commit.")
