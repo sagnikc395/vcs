@@ -81,3 +81,7 @@ etc. either things that is perfectly compatible with git itself.
 - We then read that file as a binary file, and decompress it using zlib.
 - From the decompressed data, we extract the two header components: the object type and its size. From the type, we determine the actual class to use. We convert the size to a Python integer, and check if it matches.
 - When done, we just cacll the correct constructer for that object's format.
+
+#### Writing Objects:
+- Writing a object is reading it in reverse: we compute the hash, insert the header, zlib-compress everything and write the result in the current location.
+- hash is just computed after the header is added (so its the hash of the object itself ,uncompressed ,not just its contents).
