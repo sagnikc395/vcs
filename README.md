@@ -6,3 +6,8 @@ mainly made as a effort to learn how Git works in order to understand how [GasTo
 
 ### Background:
 Gastown uses Git as its primary persistence layer. Every action, piece of code written by a polecat, and decision by the Mayor is persisted in a Git repository, with each polecat's work done on a feature branch and bead status tracked in git history, allowing the system to resume from exactly where it left off after crashes.
+
+### References:
+
+- [Write yourself a Git](https://wyag.thb.lt/)
+- [GasTown](https://steve-yegge.medium.com/welcome-to-gas-town-4f25ee16dd04)
