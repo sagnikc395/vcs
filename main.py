@@ -1,31 +1,138 @@
-#type: ignore 
+# type: ignore
 
-import sys 
-import argparse
+import click
+from vcs.repo_create import repo_create
 
 
-def main(argv=sys.argv[1:]): 
-    argparser = argparse.ArgumentParser(description="a mini git like vcs")
-    argsubparsers = argparser.add_subparsers(title="Commands", dest="command")
-    argsubparsers.required = True 
-    
-    args = argparser.parse_args(argv) 
-    match args.command:
-        case "add": cmd_add(args)
-        case "cat-file": cmd_cat_file(args)
-        case "check-ignore": cmd_check_ignore(args)
-        case "checkout":   cmd_checkout(args)
-        case "commit": cmd_commit(args)
-        case "hash-object": cmd_hash_object(args)
-        case "init": cmd_init(args)
-        case "log": cmd_log(args)
-        case "ls-files": cmd_ls_files(args)
-        case "ls-tree": cmd_ls_tree(args)
-        case "rev-parse": cmd_rev_parse(args)
-        case "rm": cmd_rm(args)
-        case "show-ref": cmd_show_red(args)
-        case "status": cmd_status(args)
-        case "tag": cmd_tag(args)
-        case _ : print("Bad command.")
-        
-        
+@click.group()
+def cli():
+    """A mini git-like VCS."""
+    pass
+
+
+@cli.command()
+@click.argument("path", default=".", metavar="directory")
+def init(path):
+    """Initialize a new, empty repository."""
+    repo_create(path)
+
+
+@cli.command("cat-file")
+@click.argument("type", type=click.Choice(["blob", "commit", "tag", "tree"]))
+@click.argument("object")
+def cat_file(type, object):
+    """Provide content or type and size information for repository objects."""
+    pass
+
+
+@cli.command("hash-object")
+@click.option(
+    "-t",
+    "type",
+    default="blob",
+    type=click.Choice(["blob", "commit", "tag", "tree"]),
+    help="Specify the type.",
+)
+@click.option(
+    "-w", "write", is_flag=True, help="Actually write the object into the database."
+)
+@click.argument("path")
+def hash_object(type, write, path):
+    """Compute object ID and optionally creates a blob from a file."""
+    pass
+
+
+@cli.command()
+@click.argument("commit", default="HEAD")
+def log(commit):
+    """Show the commit log."""
+    pass
+
+
+@cli.command("ls-tree")
+@click.option("-r", "recursive", is_flag=True, help="Recurse into sub-trees.")
+@click.argument("tree")
+def ls_tree(recursive, tree):
+    """List the contents of a tree object."""
+    pass
+
+
+@cli.command()
+@click.argument("commit")
+@click.argument("path")
+def checkout(commit, path):
+    """Checkout a branch or paths to the working tree."""
+    pass
+
+
+@cli.command("show-ref")
+def show_ref():
+    """List references in a local repository."""
+    pass
+
+
+@cli.command()
+@click.option(
+    "-a", "create_tag_object", is_flag=True, help="Whether to create a tag object."
+)
+@click.argument("name", required=False)
+@click.argument("object", default="HEAD", required=False)
+def tag(create_tag_object, name, object):
+    """Create, list, delete or verify a tag object signed with GPG."""
+    pass
+
+
+@cli.command("rev-parse")
+@click.option(
+    "--vcs-type",
+    "type",
+    default=None,
+    type=click.Choice(["blob", "commit", "tag", "tree"]),
+    help="Specify the expected type.",
+)
+@click.argument("name")
+def rev_parse(type, name):
+    """Pick out and massage parameters."""
+    pass
+
+
+@cli.command("ls-files")
+@click.option("--verbose", is_flag=True, help="Show everything.")
+def ls_files(verbose):
+    """Show information about files in the index and the working tree."""
+    pass
+
+
+@cli.command("check-ignore")
+@click.argument("path", nargs=-1, required=True)
+def check_ignore(path):
+    """Check path(s) against ignore rules."""
+    pass
+
+
+@cli.command()
+def status():
+    """Show the working tree status."""
+    pass
+
+
+@cli.command()
+def add():
+    """Add file contents to the index."""
+    pass
+
+
+@cli.command()
+def rm():
+    """Remove files from the working tree and from the index."""
+    pass
+
+
+@cli.command()
+def commit():
+    """Record changes to the repository."""
+    pass
+
+
+def main():
+    cli()
