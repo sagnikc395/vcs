@@ -3,6 +3,8 @@ import os
 import zlib 
 import hashlib
 
+from vcs.vcs_commit import VCSCommit
+
 from .vcs_repo import repo_file
 from .vcs_blob import VCSBlob
 class VCSObject:

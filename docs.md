@@ -107,3 +107,14 @@ etc. either things that is perfectly compatible with git itself.
 ### hash-object command:
 - want to put our own data in our repo, though , hash-object is basically the opposite of `cat-file`: it reads a file, computes its hash as an object, either storing it in the repo or just printing its hash.
 `wyag hash-object [-w] [-t TYPE] FILE`
+
+### parsing commits:
+- format is simplified version of mail messages. it begins with a series of key-value pairs, with space as the k/v seperator and ends with the commit message, that may span over multiple lines.
+- values may continue over multiple lines, subsequent lines start with a space which the parser must drop.
+- fields:
+    - tree -> reference to a tree object. A tree map blobs IDs to filesystem locations. and describes a state of the work tree. Put simply, it is the actual content of the commit : file contents, and where they go.
+    - parent -> reference to the parent of this commit . it may be repeated: merge cmmits, for ex: have multiple parents. It may also be absent, the very first commit in a repo obviously doesnt have a parent.
+    - author and committer -> seperate, because the author of a commit is not necessarily the person who can commit it.
+    - gpgsig -> PGP signature of this object.
+
+- 

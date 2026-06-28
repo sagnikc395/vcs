@@ -1,8 +1,9 @@
 import click
 import sys 
 
+from vcs.vcs_commit import log_graphviz
 from vcs.vcs_repo import repo_create, repo_find
-from vcs.vcs_obj import object_read,object_find
+from vcs.vcs_obj import object_hash, object_read,object_find
 
 
 @click.group()
@@ -54,11 +55,16 @@ def cmd_hash_object(type, write, path):
     
 
 
-@cli.command()
-@click.argument("commit", default="HEAD")
+@cli.command("log",help="Display history of a given commit.")
+@click.argument("commit", default="HEAD",help="Commit to start at.")
 def cmd_log(commit):
     """Show the commit log."""
-    pass
+    repo = repo_find()
+
+    print("digraph wyaglog{")
+    print("  node[shape=rect]")
+    log_graphviz(repo, object_find(repo, commit), set())
+    print("}")
 
 
 @cli.command("ls-tree")
