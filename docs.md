@@ -117,4 +117,12 @@ etc. either things that is perfectly compatible with git itself.
     - author and committer -> seperate, because the author of a commit is not necessarily the person who can commit it.
     - gpgsig -> PGP signature of this object.
 
-- 
+- So what makes a commit? To sum it up:
+
+A tree object, which we’ll discuss in detail in the next section, that describes the contents of the commit: files and directories;
+Zero, one or more parents;
+An author identity (name and email), and a timestamp;
+A committer identity (name and email), and a timestamp;
+An optional PGP signature
+A message;
+All this hashed together in a unique SHA-1 identifier.
