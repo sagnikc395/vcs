@@ -1,18 +1,18 @@
-
 import os
 import configparser
+from typing import Literal, overload
 
 
 class VCSRepository:
     # define and create a new git repository
 
-    worktree = None
-    gitdir = None
-    conf = None
+    worktree: str
+    gitdir: str
+    conf: configparser.ConfigParser
 
-    def __init__(self, path, force=False):  # type: ignore
+    def __init__(self, path: str, force: bool = False) -> None:
         self.worktree = path
-        self.gitdir = os.path.join(path, ".git")  # type: ignore
+        self.gitdir = os.path.join(path, ".git")
 
         if not (force or os.path.isdir(self.gitdir)):
             # check if gitdir or not
@@ -20,10 +20,10 @@ class VCSRepository:
 
         # read the configuration from .git/config , parse the ini reader
         self.conf = configparser.ConfigParser()
-        cf = repo_file(self, "config")  # type: ignore
+        cf = repo_file(self, "config")
 
-        if cf and os.path.exists(cf):  # type: ignore
-            self.conf.read([cf])  # type: ignore
+        if cf and os.path.exists(cf):
+            self.conf.read([cf])
         elif not force:
             raise Exception("Configuration file missing")
 
@@ -33,40 +33,39 @@ class VCSRepository:
                 raise Exception(f"Unsupported repositoryformatversions: {versions}")
 
 
-
-def repo_path(repo, *path):
+def repo_path(repo: VCSRepository, *path: str) -> str:
     # made it variadic, so that be called with multiple path components
     # as seperate arguments
     # utility to compute path under repo's gitdir
     return os.path.join(repo.gitdir, *path)
 
 
-def repo_file(repo, *path, mkdir=False):
+def repo_file(repo: VCSRepository, *path: str, mkdir: bool = False) -> str | None:
     # same as repo_path, but will create a dirname(*path) if absent
     if repo_dir(repo, *path[:-1], mkdir=mkdir):
         return repo_path(repo, *path)
 
 
-def repo_dir(repo, *path, mkdir=False):
+def repo_dir(repo: VCSRepository, *path: str, mkdir: bool = False) -> str | None:
     # same as repo_path, but mkdir *path if absent if mkdir
-    path = repo_path(repo, *path)
+    full_path = repo_path(repo, *path)
 
-    if os.path.exists(path):
-        if os.path.isdir(path):
-            return path
+    if os.path.exists(full_path):
+        if os.path.isdir(full_path):
+            return full_path
         else:
-            raise Exception(f"Not a directory {path}")
+            raise Exception(f"Not a directory {full_path}")
 
     if mkdir:
-        os.makedirs(path)
-        return path
+        os.makedirs(full_path)
+        return full_path
     else:
         return None
 
 
-def repo_create(path):
+def repo_create(path: str) -> VCSRepository:
     ## create a new repo at path
-    repo = GitRepository(path, True)
+    repo = VCSRepository(path, True)
 
     # first make sure that the path either doesnt exist or is an empty dir
     if os.path.exists(repo.worktree):
@@ -83,16 +82,22 @@ def repo_create(path):
     assert repo_dir(repo, "refs", "heads", mkdir=True)
 
     # .git/description
-    with open(repo_file(repo, "description"), "w") as f:
+    description_path = repo_file(repo, "description")
+    assert description_path is not None
+    with open(description_path, "w") as f:
         f.write(
             "Unnamed repository; edit this file 'description' to name the repository.\n"
         )
 
     # .git/HEAD
-    with open(repo_file(repo, "HEAD"), "w") as f:
+    head_path = repo_file(repo, "HEAD")
+    assert head_path is not None
+    with open(head_path, "w") as f:
         f.write("ref: refs/heads/master\n")
 
-    with open(repo_file(repo, "config"), "w") as f:
+    config_path = repo_file(repo, "config")
+    assert config_path is not None
+    with open(config_path, "w") as f:
         config = repo_default_config()
         config.write(f)
 
@@ -100,7 +105,7 @@ def repo_create(path):
 
 
 # create config
-def repo_default_config():
+def repo_default_config() -> configparser.ConfigParser:
     ret = configparser.ConfigParser()
 
     ret.add_section("core")
@@ -111,11 +116,21 @@ def repo_default_config():
     return ret
 
 
-def repo_find(path=".", required=True):
+@overload
+def repo_find(path: str = ".", required: Literal[True] = True) -> VCSRepository: ...
+
+
+@overload
+def repo_find(
+    path: str = ".", required: Literal[False] = False
+) -> VCSRepository | None: ...
+
+
+def repo_find(path: str = ".", required: bool = True) -> VCSRepository | None:
     path = os.path.realpath(path)
 
     if os.path.isdir(os.path.join(path, ".git")):
-        return GitRepository(path)
+        return VCSRepository(path)
 
     # if we haven't returned, recurse in parent
     parent = os.path.realpath(os.path.join(path, ".."))
