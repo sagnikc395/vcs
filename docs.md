@@ -31,3 +31,10 @@ etc. either things that is perfectly compatible with git itself.
 - for creating a new Repoisotry object, we only need to make a few checks:
     - we must verify that the directory exists, and contains a subdirectory called .git
     - we then read its configuration in .git/config -> an INI file, and checks that core.repositoryformatversion is 0. 
+
+-`repo_path`:
+    - utility function to compute paths and create missing directory structures if needed.
+- `repo_file`:
+    - return and optionally create a path to a file 
+- `repo_dir`:
+    - return and optionally create a path to a dir. File versions only creates the directories upto the last component.

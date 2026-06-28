@@ -2,7 +2,6 @@ import sys
 import argparse
 
 
-
 def main(argv=sys.argv[1:]): # type: ignore
     argparser = argparse.ArgumentParser(description="a mini git like vcs")
     argsubparsers = argparser.add_subparsers(title="Commands", dest="command")
