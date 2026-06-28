@@ -2,7 +2,7 @@ import os
 import configparser
 
 
-class GitRepository:
+class VCSRepository:
     # define and create a new git repository
 
     worktree = None

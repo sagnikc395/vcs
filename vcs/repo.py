@@ -2,7 +2,7 @@
 import os
 import configparser
 
-from .git_repo import GitRepository
+from .vcs_repo import GitRepository
 
 
 def repo_path(repo, *path):
@@ -81,21 +81,22 @@ def repo_default_config():
 
     return ret
 
+
 def repo_find(path=".", required=True):
     path = os.path.realpath(path)
-    
-    if os.path.isdir(os.path.join(path,".git")):
+
+    if os.path.isdir(os.path.join(path, ".git")):
         return GitRepository(path)
-    
-    # if we haven't returned, recurse in parent 
-    parent = os.path.realpath(os.path.join(path,".."))
-    
+
+    # if we haven't returned, recurse in parent
+    parent = os.path.realpath(os.path.join(path, ".."))
+
     if parent == path:
-        # base case 
-        # no git 
+        # base case
+        # no git
         if required:
             raise Exception("no git directory")
         else:
-            return None 
-        
-    return repo_find(parent,required)
+            return None
+
+    return repo_find(parent, required)

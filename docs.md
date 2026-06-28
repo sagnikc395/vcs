@@ -74,3 +74,10 @@ etc. either things that is perfectly compatible with git itself.
 - before we dive into the details of various types of objects, we need to abstract over these common features.
 - easiest way is to create a generic `GitObject` with 2 methods : serialize() and deserialize() and a default init() to create a new emtpy object if needed.
 - the `__init__` either loads the object from the provided data or calls the subclasses provided `init()` to create a new.empty object.
+
+#### Reading Objects:
+- To read a object, we need to know its SHA-1 hash. 
+- We then compute its path from this hash , and look it up inside of the "objects" directory in the gitdir.
+- We then read that file as a binary file, and decompress it using zlib.
+- From the decompressed data, we extract the two header components: the object type and its size. From the type, we determine the actual class to use. We convert the size to a Python integer, and check if it matches.
+- When done, we just cacll the correct constructer for that object's format.
