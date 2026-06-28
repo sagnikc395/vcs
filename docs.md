@@ -45,3 +45,7 @@ etc. either things that is perfectly compatible with git itself.
     - .git/HEAD -> a reference to the current HEAD 
     - .git/config > repo's config file
     
+- config file is very simple, a INI like file with a single section ([core]) and 3 fields:
+    - repositoryformatversion = 0 -> the version of the gitdir format. 0 means the initial format, 1 the same with extensions. if > 1, we ignore, we accept only 0
+    - filemode=false, disables tracking of the file modes (permissions) changes in the work tree 
+    - base=false; indicates that this repo has a worktree.Git supports an optional worktree key which indicates the location of the worktree.
