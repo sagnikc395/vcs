@@ -1,5 +1,6 @@
 # type: ignore
 import os 
+import configparser
 
 from .git_repo import GitRepository
 
@@ -61,3 +62,14 @@ def repo_create(path):
         config.write(f)
     
     return repo 
+
+# create config 
+def repo_default_config():
+    ret = configparser.ConfigParser()
+    
+    ret.add_section("core")
+    ret.set("core","repositoryformatversion","0")
+    ret.set("core","filemode","false")
+    ret.set("core","bare","false")
+    
+    return ret 
