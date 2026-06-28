@@ -10,7 +10,7 @@ def cli():
     pass
 
 
-@cli.command()
+@cli.command("init")
 @click.argument("path", default=".", metavar="directory")
 def init(path):
     """Initialize a new, empty repository."""
