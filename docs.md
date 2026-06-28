@@ -19,7 +19,7 @@
 
 etc. either things that is perfectly compatible with git itself.
 
-## repository abstraction
+### repository abstraction
 - almost every time we run a git command, we are trying to do something to a repo, to create it, read from it or modify it.
 - git repo made of 2 things:
     - a work tree -> where the files are meant to be in version control lives. worktree is a regular directory and the git directory is a child directory of the worktree called .git
@@ -50,7 +50,7 @@ etc. either things that is perfectly compatible with git itself.
     - filemode=false, disables tracking of the file modes (permissions) changes in the work tree 
     - base=false; indicates that this repo has a worktree.Git supports an optional worktree key which indicates the location of the worktree.
 
-## objects:
+### objects:
 - git at its core is a content-addressed filesystem.
 - unlike regular filesystems, where the name of a file is arbitary and unrelated to that file's contents, the names of files are stored by Git are mathematically derived from their contents.
 - if a single byte of text file changes,its internal name will change too. 
@@ -85,3 +85,25 @@ etc. either things that is perfectly compatible with git itself.
 #### Writing Objects:
 - Writing a object is reading it in reverse: we compute the hash, insert the header, zlib-compress everything and write the result in the current location.
 - hash is just computed after the header is added (so its the hash of the object itself ,uncompressed ,not just its contents).
+
+#### Working with blobs:
+- type header could be one of 4:
+    - blob
+    - commit
+    - tag 
+    - tree
+- blobs are the simplest of those 4 types , because they have no actual format.
+- blobs are user data: the content of every file we put in git is stored as a blob. 
+- makes them easy to manipulate as they have no actual syntax or constraints beyond the basic object storage mechanism: they are just unspecified data.
+- `VCSBlob` is trivial: serialize and deserialize functions just have to store and return their input unmodified.
+
+### cat file command:
+- simply prints the raw content of an object to stdout , uncompressed and without the git header.
+- just take two positional arguments: a type and aobject identifier.
+`vcs cat-file TYPE OBJECT`
+- `object_find` is introduced because Git has a lot of ways to refer to objects: full hash, short hash, tags. 
+- this is used as our name resolution function.
+
+### hash-object command:
+- want to put our own data in our repo, though , hash-object is basically the opposite of `cat-file`: it reads a file, computes its hash as an object, either storing it in the repo or just printing its hash.
+`wyag hash-object [-w] [-t TYPE] FILE`

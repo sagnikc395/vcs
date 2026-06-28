@@ -1,7 +1,9 @@
-# type: ignore
 
 import click
-from vcs.repo_create import repo_create
+import sys 
+
+from vcs.vcs_repo import repo_create, repo_find
+from vcs.vcs_obj import object_read,object_find
 
 
 @click.group()
@@ -18,11 +20,14 @@ def init(path):
 
 
 @cli.command("cat-file")
-@click.argument("type", type=click.Choice(["blob", "commit", "tag", "tree"]))
-@click.argument("object")
+@click.argument("type", type=click.Choice(["blob", "commit", "tag", "tree"]),help="Specify the type")
+@click.argument("object",help="The object to display")
 def cat_file(type, object):
     """Provide content or type and size information for repository objects."""
-    pass
+    repo = repo_find()
+    read_obj = object_read(repo,object_find(repo,object,fmt=type.encode()))
+    sys.stdout.buffer.write(read_obj.serialize())
+    
 
 
 @cli.command("hash-object")
@@ -36,7 +41,7 @@ def cat_file(type, object):
 @click.option(
     "-w", "write", is_flag=True, help="Actually write the object into the database."
 )
-@click.argument("path")
+@click.argument("path",help="Read object from <file>")
 def hash_object(type, write, path):
     """Compute object ID and optionally creates a blob from a file."""
     pass
