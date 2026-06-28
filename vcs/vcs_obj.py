@@ -4,6 +4,7 @@ import zlib
 import hashlib
 
 from .vcs_repo import repo_file
+from .vcs_blob import VCSBlob
 class VCSObject:
     def __init__(self, data=None) -> None:
         if data != None:
@@ -83,3 +84,16 @@ def object_write(obj,repo=None):
 
 def object_find(repo,name,fmt=None,follow=True):
     return name 
+
+def object_hash(fd,fmt,repo=None):
+    # hash object , writing to repo if provided 
+    data = fd.read()
+    
+    # choose the constructor according to fmt argument 
+    match fmt:
+        case b'commit': obj = VCSCommit(data)
+        case b'tree': obj = VCSTree(data)
+        case b'tag': obj = VCSTag(data)
+        case b'blob': obj = VCSBlob(data)
+    
+    return object_write(obj,repo)
